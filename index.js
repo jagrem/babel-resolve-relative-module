@@ -3,7 +3,7 @@ const path = require('path'),
   topLevelDirectories = ['app', 'user', 'shared'], // TODO: Enumerate directories in baseDir
   shouldModify = modulePath => topLevelDirectories.some(directory => modulePath.startsWith(directory))
 
-const resolveModule = (modulePathToResolve, filename) => {
+const thing = (modulePathToResolve, filename) => {
 
      if(shouldModify(modulePathToResolve)) {
         const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve)
@@ -15,5 +15,7 @@ const resolveModule = (modulePathToResolve, filename) => {
         return modulePathToResolve;
       }
   }
+
+const resolveModule = () => thing
 
 module.exports = resolveModule

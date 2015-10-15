@@ -1,6 +1,9 @@
 import resolveModule from '../index'
+import is from 'is'
 
-describe("a test", () => {
-	it("does stuff", () => {
+describe("Resolve module", () => {
+	it("returns a function", () => {
+		const result = resolveModule()
+		is.function(result).should.be.true
 	})
 })

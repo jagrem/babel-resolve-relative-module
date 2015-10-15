@@ -1,7 +1,9 @@
 const gulp = require('gulp'),
 	babel = require('gulp-babel'),
 	mocha = require('gulp-mocha'),
-	register = require('babel/register')
+	register = require('babel/register'),
+	polyfill = require('babel/polyfill')
+
 
 gulp.task('default', ['build', 'test'])
 
@@ -13,5 +15,9 @@ gulp.task('build', () => {
 
 gulp.task('test', () => {
 	gulp.src('test/**/*.js')
-		.pipe(mocha())
+		.pipe(mocha({
+			globals: {
+				chai: require('chai').should()
+			}
+		}))
 })

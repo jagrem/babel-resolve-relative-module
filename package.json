@@ -27,9 +27,11 @@
   "homepage": "https://github.com/jagrem/babel-resolve-relative-path-module#readme",
   "devDependencies": {
     "babel": "^5.8.23",
+    "chai": "^3.3.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^5.2.1",
     "gulp-mocha": "^2.1.3",
+    "is": "^3.1.0",
     "mocha": "^2.3.3"
   }
 }
