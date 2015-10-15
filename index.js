@@ -1,12 +1,9 @@
-const path = require('path')
-
-  baseDir = './src/'
-
-  topLevelDirectories = ['app', 'user', 'shared'] // TODO: Enumerate directories in baseDir
-
+const path = require('path'),
+  baseDir = './src/',
+  topLevelDirectories = ['app', 'user', 'shared'], // TODO: Enumerate directories in baseDir
   shouldModify = modulePath => topLevelDirectories.some(directory => modulePath.startsWith(directory))
 
-  resolveModule = (modulePathToResolve, filename) => {
+const resolveModule = (modulePathToResolve, filename) => {
 
      if(shouldModify(modulePathToResolve)) {
         const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve)
