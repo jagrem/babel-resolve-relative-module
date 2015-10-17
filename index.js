@@ -1,21 +1,53 @@
-const path = require('path'),
-  baseDir = './src/',
-  topLevelDirectories = ['app', 'user', 'shared'], // TODO: Enumerate directories in baseDir
-  shouldModify = modulePath => topLevelDirectories.some(directory => modulePath.startsWith(directory))
+import is from 'is'
+import fs from 'fs'
+import path from 'path'
 
-const thing = (modulePathToResolve, filename) => {
+const resolveModule = (baseDir) => {
 
-     if(shouldModify(modulePathToResolve)) {
-        const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve)
-         absoluteModulePath = path.resolve(modulePathRelativeToBase)
-         moduleDirectoryRelativeToFilename = path.relative(path.dirname(filename), path.dirname(absoluteModulePath))
-         modulePathRelativeToFilename = './' + moduleDirectoryRelativeToFilename + '/' + path.basename(modulePathToResolve)
-        return modulePathRelativeToFilename
-      } else {
-        return modulePathToResolve;
-      }
+  let resolver
+
+  if(baseDir) {
+
+    if(!is.string(baseDir)) {
+      throw Error("Hey! That path should at least be a string.")
+    }
+
+    const topLevelEntries = fs
+      .readdirSync(baseDir)
+      .map(entryName => {
+        const fullPath = baseDir + path.sep + entryName
+        return {
+            name: entryName,
+            path: fullPath,
+            stats: fs.statSync(fullPath)
+        }
+      })
+
+    const directories = topLevelEntries
+      .filter(entry => entry.stats.isDirectory())
+      .map(entry => entry.name)
+
+    const shouldResolve = modulePath => directories.some(directory => modulePath.startsWith(directory))
+
+    const resolvePathToModule = (modulePathToResolve, filename) => {
+
+      const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve)
+      const absoluteModulePath = path.resolve(modulePathRelativeToBase)
+      const moduleDirectoryRelativeToFilename = path.relative(path.dirname(filename), path.dirname(absoluteModulePath))
+      const modulePathRelativeToFilename = './' + moduleDirectoryRelativeToFilename + '/' + path.basename(modulePathToResolve)
+      return modulePathRelativeToFilename
+    }
+
+    resolver = (modulePathToResolve, filename) => {
+      return shouldResolve(modulePathToResolve)
+        ? resolvePathToModule(modulePathToResolve, filename)
+        : modulePathToResolve
+    }
+  } else {
+    resolver = (modulePathToResolve, filename) => modulePathToResolve
   }
 
-const resolveModule = () => thing
+  return resolver
+}
 
 module.exports = resolveModule
