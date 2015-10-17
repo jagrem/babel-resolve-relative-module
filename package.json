@@ -2,7 +2,7 @@
   "name": "babel-resolve-relative-module",
   "version": "0.0.4",
   "description": "Babel resolveModuleSource implementation to allow paths relative to a directory",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
