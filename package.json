@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jagrem/babel-resolve-relative-path-module.git"
+    "url": "git+https://github.com/jagrem/babel-resolve-relative-module.git"
   },
   "keywords": [
     "babel",
