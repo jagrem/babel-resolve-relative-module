@@ -19,23 +19,23 @@ const resolveModule = (baseDir) => {
         return {
             name: entryName,
             path: fullPath,
-            stats: fs.statSync(fullPath)
+            isDirectory: fs.statSync(fullPath).isDirectory()
         }
       })
 
     const directories = topLevelEntries
-      .filter(entry => entry.stats.isDirectory())
+      .filter(entry => entry.isDirectory)
       .map(entry => entry.name)
 
     const shouldResolve = modulePath => directories.some(directory => modulePath.startsWith(directory))
+    const getModulePathRelativeToFilename = (moduleDirectoryRelativeToFilename, modulePathToResolve) => "." + path.sep + moduleDirectoryRelativeToFilename + path.sep + path.basename(modulePathToResolve)
 
     const resolvePathToModule = (modulePathToResolve, filename) => {
 
       const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve)
       const absoluteModulePath = path.resolve(modulePathRelativeToBase)
       const moduleDirectoryRelativeToFilename = path.relative(path.dirname(filename), path.dirname(absoluteModulePath))
-      const modulePathRelativeToFilename = './' + moduleDirectoryRelativeToFilename + '/' + path.basename(modulePathToResolve)
-      return modulePathRelativeToFilename
+      return getModulePathRelativeToFilename(moduleDirectoryRelativeToFilename, modulePathToResolve)
     }
 
     resolver = (modulePathToResolve, filename) => {

@@ -30,12 +30,12 @@ var resolveModule = function resolveModule(baseDir) {
         return {
           name: entryName,
           path: fullPath,
-          stats: _fs2['default'].statSync(fullPath)
+          isDirectory: _fs2['default'].statSync(fullPath).isDirectory()
         };
       });
 
       var directories = topLevelEntries.filter(function (entry) {
-        return entry.stats.isDirectory();
+        return entry.isDirectory;
       }).map(function (entry) {
         return entry.name;
       });
@@ -45,14 +45,16 @@ var resolveModule = function resolveModule(baseDir) {
           return modulePath.startsWith(directory);
         });
       };
+      var getModulePathRelativeToFilename = function getModulePathRelativeToFilename(moduleDirectoryRelativeToFilename, modulePathToResolve) {
+        return "." + _path2['default'].sep + moduleDirectoryRelativeToFilename + _path2['default'].sep + _path2['default'].basename(modulePathToResolve);
+      };
 
       var resolvePathToModule = function resolvePathToModule(modulePathToResolve, filename) {
 
         var modulePathRelativeToBase = _path2['default'].join(baseDir, modulePathToResolve);
         var absoluteModulePath = _path2['default'].resolve(modulePathRelativeToBase);
         var moduleDirectoryRelativeToFilename = _path2['default'].relative(_path2['default'].dirname(filename), _path2['default'].dirname(absoluteModulePath));
-        var modulePathRelativeToFilename = './' + moduleDirectoryRelativeToFilename + '/' + _path2['default'].basename(modulePathToResolve);
-        return modulePathRelativeToFilename;
+        return getModulePathRelativeToFilename(moduleDirectoryRelativeToFilename, modulePathToResolve);
       };
 
       resolver = function (modulePathToResolve, filename) {
