@@ -1,6 +1,6 @@
 {
   "name": "babel-resolve-relative-module",
-  "version": "0.0.7",
+  "version": "0.1.0",
   "description": "Babel resolveModuleSource implementation to allow paths relative to a directory",
   "main": "main.js",
   "scripts": {
