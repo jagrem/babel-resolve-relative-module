@@ -1,7 +1,7 @@
 const gulp = require('gulp'),
 	babel = require('gulp-babel'),
 	mocha = require('gulp-mocha'),
-	register = require('babel/register')
+	register = require('babel-core/register')
 
 gulp.task('default', ['build', 'test'])
 

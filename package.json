@@ -1,6 +1,6 @@
 {
   "name": "babel-resolve-relative-module",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Babel resolveModuleSource implementation to allow paths relative to a directory",
   "main": "main.js",
   "scripts": {
@@ -26,10 +26,12 @@
   },
   "homepage": "https://github.com/jagrem/babel-resolve-relative-module#readme",
   "devDependencies": {
-    "babel": "^5.8.23",
+    "babel-core": "^6.2.0",
+    "babel-preset-es2015": "^6.1.18",
+    "babel-preset-stage-0": "^6.1.18",
     "chai": "^3.3.0",
     "gulp": "^3.9.0",
-    "gulp-babel": "^5.2.1",
+    "gulp-babel": "^6.1.0",
     "gulp-mocha": "^2.1.3",
     "mocha": "^2.3.3"
   },
