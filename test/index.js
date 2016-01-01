@@ -1,6 +1,7 @@
 import resolveModule from '../index'
 import is from 'is'
 import { expect } from 'chai'
+import path from 'path'
 
 describe("Resolve module module", () => {
 	it("returns a function", () => {
@@ -13,6 +14,8 @@ describe("Resolve module module", () => {
 	})
 
 	describe("resolving relative paths", () => {
+        const normalize = p => p.replace(/\//g, path.sep)
+
 		let resolver
 
 		beforeEach(() => {
@@ -21,17 +24,17 @@ describe("Resolve module module", () => {
 
 		it("resolves a relative path in a sybling directory", () => {
 			resolver('example/1/index', './test/example/2/index.js')
-				.should.equal('./../1/index')
+				.should.equal(normalize('./../1/index'))
 		})
 
 		it("resolves a relative path in a parent directory", () => {
 			resolver('example/2/index', './test/example/2/3/index.js')
-				.should.equal('./../index')
+				.should.equal(normalize('./../index'))
 		})
 
 		it("resolves a relative path in a child directory", () => {
 			resolver('example/2/3/index', './test/example/2/index.js')
-				.should.equal('./3/index')
+				.should.equal(normalize('./3/index'))
 		})
 
 		it("does not resolve an unknown relative path", () => {
