@@ -1,51 +1,76 @@
-import resolveModule from '../index'
-import is from 'is'
-import { expect } from 'chai'
-import path from 'path'
+import resolveModule from "../index";
+import is from "is";
+import { expect } from "chai";
+import path from "path";
 
-describe("Resolve module module", () => {
-	it("returns a function", () => {
-		const result = resolveModule()
-		is.function(result).should.be.true
-	})
+describe("Resolve module", () => {
+  const normalize = p => p.replace(/\//g, path.sep);
 
-	it("complains if the path I pass in is not a string", () => {
-		expect(() => resolveModule(1234)).to.throw(Error, 'Hey! That path should at least be a string.')
-	})
+  describe("when no base directory is specified", () => {
+    let resolver;
 
-	describe("resolving relative paths", () => {
-        const normalize = p => p.replace(/\//g, path.sep)
+    beforeEach(() => {
+      resolver = resolveModule();
+    });
 
-		let resolver
+    it("returns a function", () => {
+      is.function(resolver).should.be.true;
+    });
 
-		beforeEach(() => {
-			resolver = resolveModule("./test")
-		})
+    it("does not resolve path", () => {
+      resolver("example/1/index", "./test/example/2/index.js").should.equal(
+        normalize("example/1/index")
+      );
+    });
+  });
 
-		it("resolves a relative path in a sybling directory", () => {
-			resolver('example/1/index', './test/example/2/index.js')
-				.should.equal(normalize('./../1/index'))
-		})
+  describe("when an invalid base directory is specified", () => {
+    it("complains if the path I pass in is not a string", () => {
+      expect(() => resolveModule(1234)).to.throw(
+        Error,
+        "babel-resolve-relative-module: The base directory path must be a valid string."
+      );
+    });
+  });
 
-		it("resolves a relative path in a parent directory", () => {
-			resolver('example/2/index', './test/example/2/3/index.js')
-				.should.equal(normalize('./../index'))
-		})
+  describe("when a base directory is specified", () => {
+    let resolver;
 
-		it("resolves a relative path in a child directory", () => {
-			resolver('example/2/3/index', './test/example/2/index.js')
-				.should.equal(normalize('./3/index'))
-		})
+    beforeEach(() => {
+      resolver = resolveModule("./test");
+    });
 
-		it("does not resolve an unknown relative path", () => {
-			resolver('fs', './test/example/2/index.js')
-				.should.equal('fs')
-		})
+    it("returns a function", () => {
+      is.function(resolver).should.be.true;
+    });
 
-		it.skip("resolves a relative path in the root directory", () => {
-			resolver('index', './test/example/2/index.js')
-				.should.equal('./../../index')
-		})
-	})
+    it("resolves a relative path in a sibling directory", () => {
+      resolver("example/1/index", "./test/example/2/index.js").should.equal(
+        normalize("./../1/index")
+      );
+    });
 
-})
+    it("resolves a relative path in a parent directory", () => {
+      resolver("example/2/index", "./test/example/2/3/index.js").should.equal(
+        normalize("./../index")
+      );
+    });
+
+    it("resolves a relative path in a child directory", () => {
+      resolver("example/2/3/index", "./test/example/2/index.js").should.equal(
+        normalize("./3/index")
+      );
+    });
+
+    it("does not resolve an unknown relative path", () => {
+      resolver("fs", "./test/example/2/index.js").should.equal("fs");
+    });
+
+    // TODO: Allow specifying modules in the root directory.
+    it.skip("resolves a relative path in the root directory", () => {
+      resolver("index", "./test/example/2/index.js").should.equal(
+        "./../../index"
+      );
+    });
+  });
+});

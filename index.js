@@ -1,53 +1,67 @@
-import is from 'is'
-import fs from 'fs'
-import path from 'path'
+import is from "is";
+import fs from "fs";
+import path from "path";
 
-const resolveModule = (baseDir) => {
+const resolveModule = baseDir => {
+  let resolver;
 
-  let resolver
-
-  if(baseDir) {
-
-    if(!is.string(baseDir)) {
-      throw Error("Hey! That path should at least be a string.")
-    }
-
-    const topLevelEntries = fs
-      .readdirSync(baseDir)
-      .map(entryName => {
-        const fullPath = baseDir + path.sep + entryName
-        return {
-            name: entryName,
-            path: fullPath,
-            isDirectory: fs.statSync(fullPath).isDirectory()
-        }
-      })
-
-    const directories = topLevelEntries
-      .filter(entry => entry.isDirectory)
-      .map(entry => entry.name)
-
-    const shouldResolve = modulePath => directories.some(directory => modulePath.startsWith(directory))
-    const getModulePathRelativeToFilename = (moduleDirectoryRelativeToFilename, modulePathToResolve) => "." + path.sep + moduleDirectoryRelativeToFilename + path.sep + path.basename(modulePathToResolve)
-
-    const resolvePathToModule = (modulePathToResolve, filename) => {
-
-      const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve)
-      const absoluteModulePath = path.resolve(modulePathRelativeToBase)
-      const moduleDirectoryRelativeToFilename = path.relative(path.dirname(filename), path.dirname(absoluteModulePath))
-      return getModulePathRelativeToFilename(moduleDirectoryRelativeToFilename, modulePathToResolve)
-    }
-
-    resolver = (modulePathToResolve, filename) => {
-      return shouldResolve(modulePathToResolve)
-        ? resolvePathToModule(modulePathToResolve, filename)
-        : modulePathToResolve
-    }
-  } else {
-    resolver = (modulePathToResolve, filename) => modulePathToResolve
+  if (!baseDir) {
+    return modulePathToResolve => modulePathToResolve;
   }
 
-  return resolver
-}
+  if (!is.string(baseDir)) {
+    throw Error(
+      "babel-resolve-relative-module: The base directory path must be a valid string."
+    );
+  }
 
-module.exports = resolveModule
+  const topLevelEntries = fs.readdirSync(baseDir).map(entryName => {
+    const fullPath = baseDir + path.sep + entryName;
+    return {
+      name: entryName,
+      path: fullPath,
+      isDirectory: fs.statSync(fullPath).isDirectory()
+    };
+  });
+
+  const directories = topLevelEntries
+    .filter(entry => entry.isDirectory)
+    .map(entry => entry.name);
+
+  const shouldResolve = modulePath =>
+    directories.some(directory => modulePath.startsWith(directory));
+
+  const getModulePathRelativeToFilename = (
+    moduleDirectoryRelativeToFilename,
+    modulePathToResolve
+  ) =>
+    "." +
+    path.sep +
+    moduleDirectoryRelativeToFilename +
+    path.sep +
+    path.basename(modulePathToResolve);
+
+  const resolvePathToModule = (modulePathToResolve, filename) => {
+    const modulePathRelativeToBase = path.join(baseDir, modulePathToResolve);
+    const absoluteModulePath = path.resolve(modulePathRelativeToBase);
+    const moduleDirectoryRelativeToFilename = path.relative(
+      path.dirname(filename),
+      path.dirname(absoluteModulePath)
+    );
+
+    return getModulePathRelativeToFilename(
+      moduleDirectoryRelativeToFilename,
+      modulePathToResolve
+    );
+  };
+
+  resolver = (modulePathToResolve, filename) => {
+    return shouldResolve(modulePathToResolve)
+      ? resolvePathToModule(modulePathToResolve, filename)
+      : modulePathToResolve;
+  };
+
+  return resolver;
+};
+
+module.exports = resolveModule;
